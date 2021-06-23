@@ -436,6 +436,8 @@ class fileData():
                     vTmp.append(rec[1])
                 else:
                     vTmp.append(rec[1]+':'+str(rec[2]))
+        if vTmp is not None:
+            vTmp.sort()
         cls.printLog(' '*4 + '-PS18- returnItemList() - Item list returned ' + str(vTmp))
         return vTmp
 

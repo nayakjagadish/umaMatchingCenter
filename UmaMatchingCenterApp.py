@@ -155,14 +155,13 @@ class transPortal():
         self.dateList=pStore.appListBox(self.appRoot,range(1,31),[350,150])
         self.monthList.listObject.bind('<<ListboxSelect>>',self.selectMonthList)
         self.dateList.listObject.bind('<<ListboxSelect>>',self.selectDateList)
-
         self.transObj=pStore.appTreeView(self.appRoot,self.treeConfig,[50,450])
         self.refreshTree()
         self.transObj.tView.bind('<Double-1>',self.transactionTreeSel)
         
         self.transLbl = pStore.appLabel(self.appRoot,self.trLabel)
-        self.trSearchList=pStore.appEntrybox(self.appRoot,self.trEntry)
-        self.transBtn=pStore.appButtons(self.appRoot,self.trButton)
+        self.trSearchList = pStore.appEntrybox(self.appRoot,self.trEntry)
+        self.transBtn = pStore.appButtons(self.appRoot,self.trButton)
         self.transBtn.returnList[0]['command']=self.searchTrans
         self.transBtn.returnList[1]['command']=self.searchAll
         self.transBtn.returnList[2]['command']=self.resetValues

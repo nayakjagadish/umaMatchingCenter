@@ -18,6 +18,8 @@ class primaryItem():
 
     def brandListRefresh(self):
         tmp=list(set([f[0] for f in list(pStore.fileData.itemList.values())]))
+        if tmp is not None:
+            tmp.sort()
         self.brandList.listPopulate(tmp) #Populate Item Name List box
 
     def selectBrandList(self,evt):
