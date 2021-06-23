@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime as dt
@@ -49,7 +50,7 @@ class fileData():
         if var.isdigit():
             return float(var)
 
-    @classmethod
+    '''@classmethod
     def receiptPrint(cls,transID):
         cls.readTransactions()
         vFile = 'receipts\\R_'+str(transID)+'.txt'
@@ -74,8 +75,60 @@ class fileData():
             fp.write('SGST'+str(trn[12])+'\n')
             fp.write('Amount Payable by Customer : '+str(trn[14])+'\n')
 
-        print('Hahahah')
+        print('Hahahah')'''
+
+    @classmethod
+    def receiptPrint(cls,transID):
+        dText = { '1' : 'One', '2' : 'Two', '3' : 'Three', '4' : 'Four', '5' : 'Five', '6' : 'Six', '7' : 'Seven', '8' : 'Eight', '9' : 'Nine', '0' : 'Zero'}
+        cls.readTransactions()
+        vFile = 'receipts\\R_'+str(transID)+'.html'
+        trn = cls.transList[str(transID)]
+        with open(vFile,'w') as fp:
+            fp.write('<html>'+'\n'+'<body>'+'\n')
+            fp.write('<h2>'+8*'&nbsp '+'Uma Matching Center</h2>'+'\n')
+            fp.write('<address>'+13*'&nbsp '+'Tathastu market Complex, CRP Square<br />'+18*'&nbsp '+'Bhubaneswar-12<br />'+15*'&nbsp '+'GST: 21ASIPP4739P1Z6</address>'+'\n')
+            fp.write('<h6>'+ 40 * '-&nbsp; '+'<br />Transaction # :'+ 1 * '&nbsp; '+str(transID) + 6 * '&nbsp; ' +'Date: '+ trn[0].split(' ')[0] + 6 * '&nbsp; ' + 'Time: '+ trn[0].split(' ')[1] +'<br />')
+            fp.write(40 * '-&nbsp; ' + '</h6>')
+
+            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
+            fp.write('    Item Name'.ljust(20,' ')+'HSN'.ljust(10,' ')+'Qty'.ljust(6,' ')+'MRP'.ljust(6,' ')+'Disc'.ljust(6,' ')+'Final'.ljust(6,' ')+'\n')
+            for rec in cls.transItemList[str(transID)]:
+                vItm = str(rec[0][:4])+' '+str(rec[1][:4])+' '+str(rec[4][:4])+' '+str(rec[5][:4])
+                fp.write(vItm.ljust(20,' ')+str(rec[3]).ljust(10,' ')+str(rec[11]).ljust(6,' ')+str(rec[6]).ljust(6,' ')+str(rec[14]).ljust(6,' ')+str(rec[17]).ljust(6,' ')+'\n')
+            fp.write(30 * '- '+'\n')
+            fp.write('Total Qty :  <strong>'+str(trn[1])+'</strong>'+'\n')
+            fp.write('Total MRP:              <strong>'+str(trn[7])+'</strong>'+'\n')
+            fp.write('Discount :              <strong>'+str(trn[10])+'</strong>'+'\n')
+            fp.write(30 * '- '+'</pre>'+'\n')
+            fp.write('<h3>Total'+ 30 * '&nbsp'+str(trn[14])+'</h3>'+'\n')
             
+            [rup,pas] = str(trn[14]).split('.')
+            vTxt=''
+            for k in rup:
+                vTxt += dText[k]+' '
+            vTxt+= 'Rupees....'
+            fp.write('<h5>'+vTxt+'</h5>'+'\n')
+
+            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
+            fp.write('SGST      2.5%      '+str(trn[11])+'\n')
+            fp.write('CGST      2.5%      '+str(trn[12])+'\n')
+            fp.write(30 * '- '+'\n')
+            fp.write('CASH : '+str(trn[14])+'\n')
+            fp.write(30 * '- '+'\n')
+            fp.write('Tender Amount : '+str(trn[14])+'\n')
+            fp.write('Return Amount : 0'+'\n')
+            fp.write(30 * '- '+'\n')
+            fp.write('*Subject to the Bhubaneswar Jurisdiction only'+'\n')
+            fp.write('*Exchange within 16 days against bill and Price Tag'+'\n')
+            fp.write('*Exchange time 2.00 PM to 4.00 PM'+'\n')
+            fp.write('*No Guarantee on color &amp; durability'+'\n')
+            fp.write('*Every Monday Closed on .........Mob:'+'\n')
+            fp.write(30 * '- '+'</pre>'+'\n')
+        
+        response = messagebox.askquestion("Print Receipt","Do you want to print the receipt ?",icon = 'question')
+        if response == 'yes':
+            #os.startfile('C:\\Python\\'+vFile,'print')
+            os.startfile(vFile,'print')
     ########################################################################  Config Methods
     @classmethod
     def returnMonthList(cls):
@@ -240,7 +293,10 @@ class fileData():
     @classmethod
     def addNewTransaction(cls,vTrans,vTransItem):
         transNumber=vTrans[1]
-        if cls.fConvert(vTrans[3]) > 0:
+        cls.printLog(' '*4 + '-PS31- addNewTransaction() -- Transaction info written ' + str(vTrans))
+        cls.printLog(' '*4 + '-PS32- addNewTransaction() -- Transaction item info written ' + str(vTransItem))
+
+        if cls.fConvert(vTrans[9]) > 0: # Check if total MRP is zero, since there could be deletion of only item in transaction. This needs to be replaced in file.
             with open(cls.fileTransaction,'r+') as fp:
                 vLine=fp.readlines()
                 fp.seek(0)
@@ -334,6 +390,7 @@ class fileData():
     def addNewInvoice(cls,vKey,vHead,vDetail):
         cls.printLog(' '*4 + '-PS15- addNewInvoice() -- Invoice info written ' + str( vHead))
         cls.printLog(' '*4 + '-PS16- addNewInvoice() -- Invoice item info written ' + str( vDetail))
+
         if cls.fConvert(vHead[3]) > 0:
             with open(cls.fileInvoice,'r+') as fp:
                 vLine=fp.readlines()
@@ -494,7 +551,7 @@ class fileData():
         cls.readItemStock()
         vInv=cls.getInvoice(str(InvoiceId))
         itemList=cls.getInvoiceItems(str(InvoiceId))
-        
+
         #Stock Adjustment
         for rec in itemList:
             # Adjust unit price after first inv discount and item discount
@@ -572,7 +629,8 @@ class fileData():
         cls.readItemStock()
         for rec in cls.getTransItems(str(transNum)):
             #tracing item in modified list
-            m=cls.changeTransMatchup([rec[19]]+rec[4:8],[[t]+modList[t] for t in modList.keys()],6)
+            #m=cls.changeTransMatchup([rec[19]]+rec[4:8],[[t]+modList[t] for t in modList.keys()])
+            m=cls.changeTransMatchup([rec[19]]+rec[4:8],modList)
             if m != -2:
                 if m == -1:
                     deltaQty  = cls.fConvert(rec[11])
@@ -600,7 +658,6 @@ class fileData():
                     returnKey = -2
                 else:
                     returnKey = r
-        
         return returnKey
             
     @classmethod  
