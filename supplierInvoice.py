@@ -471,7 +471,7 @@ class addInvoicePanel():
 
     def Supplier(self):
         self.invoice_destroy()
-        #obj=sSupplier.supplierWindow(self.window)
+        obj=sSupplier.supplierWindow(self.window)
 
     def invoice_destroy(self):
         self.invLbl.destroy()
