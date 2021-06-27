@@ -14,6 +14,8 @@ class fileData():
     transItemList={}
     itemStockList={}
     config={}
+    delim=';'
+    custom = lambda x : str(x).replace(delim,',')
     FYarray = [['2020 APR - 2021 MAR','2020'],['2021 APR - 2022 MAR','2021'],['2022 APR - 2023 MAR','2022'],['2023 APR - 2024 MAR','2023'],['2024 APR - 2025 MAR','2024'],['2025 APR - 2026 MAR','2025']]
     monthList = [[('April, 2020','202004'),('May, 2020','202005'),('June, 2020','202006'),('July, 2020','202007'),('August, 2020','202008'),('September, 2020','202009'),('October, 2020','202010'),('November, 2020','202011'),('December, 2020','202012'),('January, 2021','202101'),('February, 2021','202102'),('March, 2021','202103')],
                  [('April, 2021','202104'),('May, 2021','202105'),('June, 2021','202106'),('July, 2021','202107'),('August, 2021','202108'),('September, 2021','202109'),('October, 2021','202110'),('November, 2021','202111'),('December, 2021','202112'),('January, 2022','202201'),('February, 2022','202202'),('March, 2022','202203')],
@@ -188,15 +190,14 @@ class fileData():
         with open(cls.fileConfig,'w') as fp:
             for [k,v] in cls.config.items():
                 fp.write(k+':'+str(v)+'\n')
-    ########################################################################SUPPIER Methods
+    ########################################################################SUPPIER Methods   
     @classmethod
     def readSupplier(cls):
         cls.printLog(' '*4 + '-PS5- readSupplier() -- Supplier file read')
         with open(cls.fileSupplier,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 cls.supplierList[vTmp[0]]=vTmp[1:]
-        #print(cls.supplierList)
 
     @classmethod
     def returnSupplierList(cls):
@@ -243,38 +244,31 @@ class fileData():
         cls.printLog(' '*4 + '-PS10- getSupplierkey() -- Supplier Info written ')
         with open(cls.fileSupplier,'w') as fp:
             for idx in cls.supplierList.keys():
-                tmp=idx
-                for rec in cls.supplierList[idx]:
-                    tmp+='|:|'+rec
-                fp.write(tmp+'\n')
-
+                fp.write(cls.delim.join(list(map(cls.custom,[idx]+cls.supplierList[idx])))+'\n')
     ########################################################################Trasaction Methods
     @classmethod
     def transSumryInfo(cls,invId):
         with open(cls.fileInvoice,'r') as fp:
             for rec in fp.readlines():
-                if rec.startswith(str(invId)+'|:|'):
-                    vTmp=rec.rstrip('\n').split('|:|')
+                if rec.startswith(str(invId)+cls.delim):
+                    vTmp=rec.rstrip('\n').split(cls.delim)
                     return vTmp[2:]
 
     @classmethod
     def getTransHead(cls,vTransNum):
-        vList=[]
         with open(cls.fileTransaction,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
-                if vTmp[0] == str(vTransNum):
-                    return vTmp
-        return vList
+                if rec.startswith(str(vTransNum)+cls.delim):
+                    return rec.rstrip('\n').split(cls.delim)
+        return []
 
     @classmethod
     def getTransItems(cls,vTransNum):
         vList=[]
         with open(cls.fileTransItem,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
-                if vTmp[0] == vTransNum:
-                    vList.append(vTmp[1:])
+                if rec.startswith(str(vTransNum)+cls.delim):
+                    vList.append(rec.rstrip('\n').split(cls.delim)[1:])
         return vList
 
     @classmethod
@@ -282,7 +276,7 @@ class fileData():
         vList=[]
         with open(cls.fileTransaction,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 if vTmp[0].startswith(vDate):
                     vTax = round(cls.fConvert(vTmp[12])+cls.fConvert(vTmp[13]),2)
                     vMargin = round(cls.fConvert(vTmp[14])-vTax-cls.fConvert(vTmp[7]),2)
@@ -301,25 +295,25 @@ class fileData():
                 vLine=fp.readlines()
                 fp.seek(0)
                 for rec in vLine:
-                    if not rec.startswith(str(transNumber)+'|:|'):
+                    if not rec.startswith(str(transNumber)+cls.delim):
                         fp.write(rec)
                 fp.truncate()
                 tmp=str(transNumber)
                 for itm in vTrans[2:]:
-                    tmp+='|:|'+str(itm)
+                    tmp+=cls.delim+str(itm)
                 fp.write(tmp+'\n')
 
             with open(cls.fileTransItem,'r+') as fp:
                 vLine=fp.readlines()
                 fp.seek(0)
                 for rec in vLine:
-                    if not rec.startswith(str(transNumber)+'|:|'):
+                    if not rec.startswith(str(transNumber)+cls.delim):
                         fp.write(rec)
                 fp.truncate()
                 for itm1 in vTransItem.values():
                     tmp=str(transNumber)
                     for itm2 in itm1:
-                        tmp+='|:|'+str(itm2)
+                        tmp+=cls.delim+str(itm2)
                     fp.write(tmp+'\n')
 
     @classmethod
@@ -328,36 +322,32 @@ class fileData():
         cls.transItemList={}
         with open(cls.fileTransaction,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 cls.transList[vTmp[0]]=vTmp[1:]
 
         with open(cls.fileTransItem,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 if str(vTmp[0]) not in cls.transItemList.keys():
                     cls.transItemList[str(vTmp[0])] = []
                 cls.transItemList[str(vTmp[0])].append(vTmp[1:])
-
     ########################################################################INVOICE & Invoice Item Methods
     @classmethod
     def invoiceSumryInfo(cls,invId):
         with open(cls.fileInvoice,'r') as fp:
             for rec in fp.readlines():
-                if rec.startswith(str(invId)+'|:|'):
-                    vTmp=rec.rstrip('\n').split('|:|')
-                    cls.printLog(' '*4 + '-PS11- invoiceSumryInfo() -- Invoice info returned ' + str( vTmp[2:]))
-                    return vTmp[2:]
+                if rec.startswith(str(invId)+cls.delim):
+                    cls.printLog(' '*4 + '-PS11- invoiceSumryInfo() -- Invoice info returned ')
+                    return rec.rstrip('\n').split(cls.delim)[2:]
 
     @classmethod
     def getInvoice(cls,vInvId): # supplier name as input and return list of invoices as output
-        vList=[]
         with open(cls.fileInvoice,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
-                if vTmp[0] == str(vInvId):
-                    cls.printLog(' '*4 + '-PS12- getInvoice() -- Invoice returned ' + str( vTmp[1:]))
-                    return vTmp[1:]
-        return vList
+                if rec.startswith(str(invId)+cls.delim):
+                    cls.printLog(' '*4 + '-PS12- getInvoice() -- Invoice returned ' + str(rec))
+                    return rec.rstrip('\n').split(cls.delim)[1:]
+        return []
 
     @classmethod
     def getInvoiceList(cls,vSupplier): # supplier name as input and return list of invoices as output
@@ -365,7 +355,7 @@ class fileData():
         vList=[]
         with open(cls.fileInvoice,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 if vTmp[1] == vSid:
                     vList.append([vTmp[0]]+vTmp[2:5]+[cls.fConvert(vTmp[5])+cls.fConvert(vTmp[9])+cls.fConvert(vTmp[11])]+vTmp[14:17]+[cls.fConvert(vTmp[16])-cls.fConvert(vTmp[18])])
         cls.printLog(' '*4 + '-PS13- getInvoiceList() -- Invoice list returned ')
@@ -378,9 +368,8 @@ class fileData():
         vList=[]
         with open(cls.fileInvoiceItem,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
-                if vTmp[0] == val:
-                    vList.append(vTmp[1:])
+                if rec.startswith(str(val)+cls.delim):
+                    vList.append(rec.rstrip('\n').split(cls.delim)[1:])
         cls.printLog(' '*4 + '-PS14- getInvoiceItems() -- Invoice item list returned as follows:' )
         for rec in vList:
             cls.printLog(' '*6 + 'ItemId:['+str(rec[0])+'] Size:['+str(rec[1])+'] Box Qty:['+str(rec[2])+'] Color:['+str(rec[3])+'] MRP:['+str(rec[4])+'] Price/Box:['+str(rec[5])+'] Total Price:['+str(rec[6])+'] Discount %:['+str(rec[7])+'] Disc AMount:['+str(rec[8])+'] CGST:['+str(rec[9])+'] SGST:['+str(rec[10])+'] Grand Total:['+str(rec[11])+'] Total Qty:['+str(rec[12])+'] Unit Price:['+str(rec[13])+'] Unit Disc:['+str(rec[14])+'] Unit CGST:['+str(rec[15])+'] Unit SGST:['+str(rec[16])+'] None:['+str(rec[17])+'] Box size:['+str(rec[18])+']')
@@ -390,31 +379,30 @@ class fileData():
     def addNewInvoice(cls,vKey,vHead,vDetail):
         cls.printLog(' '*4 + '-PS15- addNewInvoice() -- Invoice info written ' + str( vHead))
         cls.printLog(' '*4 + '-PS16- addNewInvoice() -- Invoice item info written ' + str( vDetail))
-
         if cls.fConvert(vHead[3]) > 0:
             with open(cls.fileInvoice,'r+') as fp:
                 vLine=fp.readlines()
                 fp.seek(0)
                 for rec in vLine:
-                    if not rec.startswith(str(vKey)+'|:|'):
+                    if not rec.startswith(str(vKey)+cls.delim):
                         fp.write(rec)
                 fp.truncate()
                 tmp=str(vKey)
                 for itm in [cls.getSupplierkey(vHead[0])]+vHead[1:]+[cls.gstRate]:
-                    tmp+='|:|'+str(itm)
+                    tmp+=cls.delim+str(itm)
                 fp.write(tmp+'\n')
 
             with open(cls.fileInvoiceItem,'r+') as fp:
                 vLine=fp.readlines()
                 fp.seek(0)
                 for rec in vLine:
-                    if not rec.startswith(str(vKey)+'|:|'):
+                    if not rec.startswith(str(vKey)+cls.delim):
                         fp.write(rec)
                 fp.truncate()
                 for itm1 in vDetail:
                     tmp=str(vKey)
                     for itm2 in itm1[1:]:
-                        tmp+='|:|'+str(itm2)
+                        tmp+=cls.delim+str(itm2)
                     fp.write(tmp+'\n')
 
     ########################################################################ITEM Methods
@@ -423,7 +411,7 @@ class fileData():
         cls.printLog(' '*4 + '-PS17- readItem()')
         with open(cls.fileItem,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 cls.itemList[str(vTmp[0])]=vTmp[1:]
 
     @classmethod
@@ -463,10 +451,7 @@ class fileData():
     def writeItem(cls):  
         with open(cls.fileItem,'w') as fp:
             for idx in cls.itemList.keys():
-                tmp=str(idx)
-                for rec in cls.itemList[idx]:
-                    tmp+='|:|'+rec
-                fp.write(tmp+'\n')
+                fp.write(cls.delim.join(list(map(cls.custom,[idx]+cls.supplierList[idx])))+'\n')
 
     @classmethod
     def addNewBrand(cls,vBrand):
@@ -493,13 +478,12 @@ class fileData():
                 return False
         else:
             return False
-
     ########################################################################ITEM STOCK Methods
     @classmethod
     def readItemStock(cls):
         with open(cls.fileItemStock,'r') as fp:
             for rec in fp.readlines():
-                vTmp=rec.rstrip('\n').split('|:|')
+                vTmp=rec.rstrip('\n').split(cls.delim)
                 cls.itemStockList[vTmp[0]]=vTmp[1:]
 
     @classmethod
@@ -531,7 +515,6 @@ class fileData():
             rec = cls.itemStockList[k]
             rec[10] = rec[4]
             rec[11] = rec[7]
-            #rec[12] = rec[5]
         cls.printLog(' '*4 + '-PS21- itemStockSync()')
         cls.writeItemStock()
 
@@ -540,8 +523,6 @@ class fileData():
         cls.readItemStock()
         for k in cls.itemStockList.keys():
             rec = cls.itemStockList[k]
-            #rec[10] = rec[4]
-            #rec[11] = rec[7]
             rec[12] = rec[5]
         cls.printLog(' '*4 + '-PS22- itemTransSync()')
         cls.writeItemStock()
@@ -710,7 +691,7 @@ class fileData():
             for idx in cls.itemStockList.keys():
                 tmp=str(idx)
                 for rec in cls.itemStockList[idx]:
-                    tmp+='|:|'+str(rec)
+                    tmp+=cls.delim+str(rec)
                 fp.write(tmp+'\n')
 ########################################################################
 ## Code for creating Child window
