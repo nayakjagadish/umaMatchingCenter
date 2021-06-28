@@ -721,7 +721,6 @@ class fileData():
     ########################################################################
     @classmethod
     def createChild(cls,arg1,arg2,arg3=None):
-        print(arg3)
         root=tk.Toplevel(arg1)
         root.title(arg2)
         if arg3 is None:
