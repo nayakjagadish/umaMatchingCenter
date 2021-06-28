@@ -308,14 +308,14 @@ class addInvoicePanel():
         # 2. Click on Save button (self.updateInvoicePage)
         # 3. Click on Save & Close button (self.saveCloseInvoice)
         pStore.fileData.printLog(' '*4 + ' -INV4- New Item page selected')
-        self.newWin=pStore.childFrame(self.window,'Add Item')
-        self.itemPage = pItem.primaryItem(self.newWin.childRoot)
-        pStore.appLabel(self.newWin.childRoot,self.addItemLabels)
-        self.addItemEntryList=pStore.appEntrybox(self.newWin.childRoot,self.addItemEntry)
+        self.newWin=pStore.fileData.createChild(self.window,'Add Item')
+        self.itemPage = pItem.primaryItem(self.newWin)
+        pStore.appLabel(self.newWin,self.addItemLabels)
+        self.addItemEntryList=pStore.appEntrybox(self.newWin,self.addItemEntry)
 
         self.itemPage.itemsList.listObject.bind('<<ListboxSelect>>',self.actionItemList)
         self.addRadioButtons()
-        self.addLineButton=pStore.appButtons(self.newWin.childRoot,[['ADD LINES',[450,270],[1,10]]])
+        self.addLineButton=pStore.appButtons(self.newWin,[['ADD LINES',[450,270],[1,10]]])
         self.addLineButton.returnList[0]['command'] = self.createLineItems #Action #1
 
     def saveCloseInvoice(self):  #Save & close of invoice page
@@ -408,7 +408,7 @@ class addInvoicePanel():
         self.saveInvoiceItem()
         self.refreshInvoiceItemTree()
         pStore.fileData.printLog(' '*4 + ' -INV27- Closing single item page')
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def deleteItemInvoiceItem(self):
         pStore.fileData.printLog(' '*4 + ' -INV28- Delete item clicked')
@@ -417,14 +417,14 @@ class addInvoicePanel():
         self.updateInvoicePage()
         self.refreshInvoiceItemTree()
         pStore.fileData.printLog(' '*4 + ' -INV29- Closing single item page')
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def itemTreeSelection(self,event):
         curItem = self.invoiceItemObj.tView.focus()
         itemSeq=self.invoiceItemObj.tView.item(curItem)['values'][0]
         self.selectedItem = self.getItemIndex(itemSeq,self.finalItemList)
         pStore.fileData.printLog(' '*4 + ' -INV21A- Item in item tree double clicked - item Sl# : '+str(itemSeq))
-        self.itemChildObj=pStore.childFrame(self.window,'view/modify Item','600x550')
+        self.itemChildObj=pStore.fileData.createChild(self.window,'view/modify Item','600x550')
         xPos=40;off=310
         itemLabels=[('Sl # :',xPos,50),
                     ('Brand :',xPos,90),
@@ -448,7 +448,7 @@ class addInvoicePanel():
                     ('Total Tax :',xPos,410),
                     ('Before Disocunt Total:', xPos+off-25,410)]
         self.itemDisc = tk.StringVar()
-        self.itemDiscDrop = pStore.appDropDown(self.itemChildObj.childRoot,
+        self.itemDiscDrop = pStore.appDropDown(self.itemChildObj,
                                            self.itemDisc,
                                            ['YES','NO',],
                                            [xPos+240,290,3,0],
@@ -459,10 +459,10 @@ class addInvoicePanel():
                    (xPos+off,210,5),(xPos,250,12),(xPos+off,250,10),(xPos,290,12),
                    (xPos+off,290,12),(xPos,330,12,1),(xPos+off,330,12,1),(xPos,370,12,1),
                    (xPos+off,370,12,1),(xPos,410,12,1),(xPos+off,410,12,1)]
-        pStore.appLabel(self.itemChildObj.childRoot,itemLabels)
-        self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj.childRoot,itemEntry)
+        pStore.appLabel(self.itemChildObj,itemLabels)
+        self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj,itemEntry)
         self.itemViewPopulate()
-        obj=pStore.appButtons(self.itemChildObj.childRoot,[['SAVE',[40,480],[1,10]],
+        obj=pStore.appButtons(self.itemChildObj,[['SAVE',[40,480],[1,10]],
                                                       ['SAVE & CLOSE',[240,480],[1,12]],
                                                       ['DELETE ITEM',[440,480],[1,10]]])
         obj.returnList[0]['command']=self.saveInvoiceItem       #SAVE Button Click

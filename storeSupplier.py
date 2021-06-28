@@ -24,16 +24,16 @@ class supplierGrid():
 class childWindow():
     def __init__(self,arg1,arg2,arg3):
         self.popMessage = arg3
-        self.childWin = pStore.childFrame(arg1,arg2,'700x400')
-        self.addGrid=supplierGrid(self.childWin.childRoot)
-        self.subButton=pStore.appButtons(self.childWin.childRoot,[['SAVE',[150,300],[4,15]]])
+        self.childWin = pStore.fileData.createChild(arg1,arg2,'700x400')
+        self.addGrid=supplierGrid(self.childWin)
+        self.subButton=pStore.appButtons(self.childWin,[['SAVE',[150,300],[4,15]]])
         self.subButton.returnList[0]['command']=self.submitAction
         pStore.fileData.printLog(' '*2 + '-SV6- Add or Modify Supplier window was opened')
 
     def submitAction(self):
         pStore.fileData.modifySupplier(self.addGrid.supEntryList.getValues())
         messagebox.showinfo('Uma Store',self.popMessage)
-        self.childWin.childRoot.withdraw()
+        self.childWin.withdraw()
 
 ######################################################New Class
 class supplierWindow():
@@ -95,7 +95,6 @@ class supplierWindow():
         if self.suplSelection is not None:
             self.supplier_destroy()
             pStore.fileData.printLog(' '*2 + '-SV11- Add Invoice option clicked')
-            #winObj=pStore.childFrame(self.supplierRoot,'Add Invoice')
             obj = sInvoice.addInvoicePanel(self.supplierRoot, self.suplSelection, pStore.fileData.getConfigId('INVOICE_ID'),True) #Open invoice window for adding new invoice
         else:
             pStore.fileData.printLog(' '*2 + '-SV12- **Error, No Supplier selected for Add Invoice option')
@@ -106,7 +105,6 @@ class supplierWindow():
         pStore.fileData.printLog(' '*2 + '-SV9- Double click on Invoice tree')
         try:
             tmp=self.invoiceObj.tView.item(curItem)['values'][0] #[Invoice ID] returned
-            #childObj=pStore.childFrame(self.supplierRoot,'View/Modify Invoice')
             pStore.fileData.printLog(' '*2 + str(tmp) + '-SV10- Invoice ID seleted')
             self.supplier_destroy()
             obj = sInvoice.addInvoicePanel(self.supplierRoot,self.suplSelection,tmp) #Open invoice window to view one existing invoice

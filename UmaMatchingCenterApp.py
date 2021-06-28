@@ -105,13 +105,13 @@ class transPortal():
         obj=sTrans.addTransactions(self.appRoot,self.transSelected,False)
 
     def openItemStockPage(self):
-        sWindow = pStore.childFrame(self.appRoot,'Uma Store Brand and Item Frame')
-        obj=sItem.brandItemWindow(sWindow.childRoot)
+        sWindow = pStore.fileData.createChild(self.appRoot,'Uma Store Brand and Item Frame')
+        obj=sItem.brandItemWindow(sWindow)
         pStore.fileData.printLog('Item and Stock management page is opened')
 
     def openSupplierPage(self):
-        sWindow = pStore.childFrame(self.appRoot,'Uma Store Supplier and Invoice Frame')
-        obj=sSupplier.supplierWindow(sWindow.childRoot)
+        sWindow = pStore.fileData.createChild(self.appRoot,'Uma Store Supplier and Invoice Frame')
+        obj=sSupplier.supplierWindow(sWindow)
         pStore.fileData.printLog('Supplier & Invoice page is opened')
 
     def setFinanceYear(self):
@@ -135,8 +135,11 @@ class transPortal():
     def customize(self):
         if __name__ == '__main__':
             self.appRoot = tk.Tk()
-            self.appRoot.title("Uma Store Billing App")
-            self.appRoot.geometry('1100x650')
+            self.appRoot.title("Uma Store Billing App") 
+            self.appRoot.attributes('-fullscreen', True)
+            pStore.fileData.monitorSize='{}x{}'.format(self.appRoot.winfo_screenwidth(),self.appRoot.winfo_screenheight())
+            self.appRoot.attributes('-fullscreen', False)
+            self.appRoot.geometry(pStore.fileData.monitorSize)
 
             self.FYval=tk.StringVar()
             self.FYselected = pStore.appDropDown(self.appRoot,self.FYval,[t[0] for t in pStore.fileData.FYarray],[1000,80,20,pStore.fileData.getConfigId('FYIDX',0)],True)

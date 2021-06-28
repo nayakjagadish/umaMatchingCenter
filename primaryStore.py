@@ -29,7 +29,8 @@ class fileData():
     fileInvoice=''
     fileInvoiceItem=''
     gstRate=2.5
-    
+    monitorSize=''
+
     @classmethod
     def printLog(cls,dta):
         with open('umaStore.log','a') as filePtr:
@@ -82,49 +83,50 @@ class fileData():
         dText = { '1' : 'One', '2' : 'Two', '3' : 'Three', '4' : 'Four', '5' : 'Five', '6' : 'Six', '7' : 'Seven', '8' : 'Eight', '9' : 'Nine', '0' : 'Zero'}
         cls.readTransactions()
         vFile = 'receipts\\R_'+str(transID)+'.html'
-        trn = cls.transList[str(transID)]
-        with open(vFile,'w') as fp:
-            fp.write('<html>'+'\n'+'<body>'+'\n')
-            fp.write('<h2>'+8*'&nbsp '+'Uma Matching Center</h2>'+'\n')
-            fp.write('<address>'+13*'&nbsp '+'Tathastu market Complex, CRP Square<br />'+18*'&nbsp '+'Bhubaneswar-12<br />'+15*'&nbsp '+'GST: 21ASIPP4739P1Z6</address>'+'\n')
-            fp.write('<h6>'+ 40 * '-&nbsp; '+'<br />Transaction # :'+ 1 * '&nbsp; '+str(transID) + 6 * '&nbsp; ' +'Date: '+ trn[0].split(' ')[0] + 6 * '&nbsp; ' + 'Time: '+ trn[0].split(' ')[1] +'<br />')
-            fp.write(40 * '-&nbsp; ' + '</h6>')
+        if str(transID) in cls.transList.keys():
+            trn = cls.transList[str(transID)]
+            with open(vFile,'w') as fp:
+                fp.write('<html>'+'\n'+'<body>'+'\n')
+                fp.write('<h2>'+8*'&nbsp '+'Uma Matching Center</h2>'+'\n')
+                fp.write('<address>'+13*'&nbsp '+'Tathastu market Complex, CRP Square<br />'+18*'&nbsp '+'Bhubaneswar-12<br />'+15*'&nbsp '+'GST: 21ASIPP4739P1Z6</address>'+'\n')
+                fp.write('<h6>'+ 40 * '-&nbsp; '+'<br />Transaction # :'+ 1 * '&nbsp; '+str(transID) + 6 * '&nbsp; ' +'Date: '+ trn[0].split(' ')[0] + 6 * '&nbsp; ' + 'Time: '+ trn[0].split(' ')[1] +'<br />')
+                fp.write(40 * '-&nbsp; ' + '</h6>')
 
-            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
-            fp.write('    Item Name'.ljust(20,' ')+'HSN'.ljust(10,' ')+'Qty'.ljust(6,' ')+'MRP'.ljust(6,' ')+'Disc'.ljust(6,' ')+'Final'.ljust(6,' ')+'\n')
-            for rec in cls.transItemList[str(transID)]:
-                vItm = str(rec[0][:4])+' '+str(rec[1][:4])+' '+str(rec[4][:4])+' '+str(rec[5][:4])
-                fp.write(vItm.ljust(20,' ')+str(rec[3]).ljust(10,' ')+str(rec[11]).ljust(6,' ')+str(rec[6]).ljust(6,' ')+str(rec[14]).ljust(6,' ')+str(rec[17]).ljust(6,' ')+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('Total Qty :  <strong>'+str(trn[1])+'</strong>'+'\n')
-            fp.write('Total MRP:              <strong>'+str(trn[7])+'</strong>'+'\n')
-            fp.write('Discount :              <strong>'+str(trn[10])+'</strong>'+'\n')
-            fp.write(30 * '- '+'</pre>'+'\n')
-            fp.write('<h3>Total'+ 30 * '&nbsp'+str(trn[14])+'</h3>'+'\n')
+                fp.write('<pre>' + '\n' + 30 * '- '+'\n')
+                fp.write('    Item Name'.ljust(20,' ')+'HSN'.ljust(10,' ')+'Qty'.ljust(6,' ')+'MRP'.ljust(6,' ')+'Disc'.ljust(6,' ')+'Final'.ljust(6,' ')+'\n')
+                for rec in cls.transItemList[str(transID)]:
+                    vItm = str(rec[0][:4])+' '+str(rec[1][:4])+' '+str(rec[4][:4])+' '+str(rec[5][:4])
+                    fp.write(vItm.ljust(20,' ')+str(rec[3]).ljust(10,' ')+str(rec[11]).ljust(6,' ')+str(rec[6]).ljust(6,' ')+str(rec[14]).ljust(6,' ')+str(rec[17]).ljust(6,' ')+'\n')
+                fp.write(30 * '- '+'\n')
+                fp.write('Total Qty :  <strong>'+str(trn[1])+'</strong>'+'\n')
+                fp.write('Total MRP:              <strong>'+str(trn[7])+'</strong>'+'\n')
+                fp.write('Discount :              <strong>'+str(trn[10])+'</strong>'+'\n')
+                fp.write(30 * '- '+'</pre>'+'\n')
+                fp.write('<h3>Total'+ 30 * '&nbsp'+str(trn[14])+'</h3>'+'\n')
             
-            [rup,pas] = str(trn[14]).split('.')
-            vTxt=''
-            for k in rup:
-                vTxt += dText[k]+' '
-            vTxt+= 'Rupees....'
-            fp.write('<h5>'+vTxt+'</h5>'+'\n')
+                [rup,pas] = str(trn[14]).split('.')
+                vTxt=''
+                for k in rup:
+                    vTxt += dText[k]+' '
+                vTxt+= 'Rupees....'
+                fp.write('<h5>'+vTxt+'</h5>'+'\n')
 
-            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
-            fp.write('SGST      2.5%      '+str(trn[11])+'\n')
-            fp.write('CGST      2.5%      '+str(trn[12])+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('CASH : '+str(trn[14])+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('Tender Amount : '+str(trn[14])+'\n')
-            fp.write('Return Amount : 0'+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('*Subject to the Bhubaneswar Jurisdiction only'+'\n')
-            fp.write('*Exchange within 16 days against bill and Price Tag'+'\n')
-            fp.write('*Exchange time 2.00 PM to 4.00 PM'+'\n')
-            fp.write('*No Guarantee on color &amp; durability'+'\n')
-            fp.write('*Every Monday Closed on .........Mob:'+'\n')
-            fp.write(30 * '- '+'</pre>'+'\n')
-        
+                fp.write('<pre>' + '\n' + 30 * '- '+'\n')
+                fp.write('SGST      2.5%      '+str(trn[11])+'\n')
+                fp.write('CGST      2.5%      '+str(trn[12])+'\n')
+                fp.write(30 * '- '+'\n')
+                fp.write('CASH : '+str(trn[14])+'\n')
+                fp.write(30 * '- '+'\n')
+                fp.write('Tender Amount : '+str(trn[14])+'\n')
+                fp.write('Return Amount : 0'+'\n')
+                fp.write(30 * '- '+'\n')
+                fp.write('*Subject to the Bhubaneswar Jurisdiction only'+'\n')
+                fp.write('*Exchange within 16 days against bill and Price Tag'+'\n')
+                fp.write('*Exchange time 2.00 PM to 4.00 PM'+'\n')
+                fp.write('*No Guarantee on color &amp; durability'+'\n')
+                fp.write('*Every Monday Closed on .........Mob:'+'\n')
+                fp.write(30 * '- '+'</pre>'+'\n')
+
     @classmethod
     def receiptPrint(cls,transID):
         vFile = 'receipts\\R_'+str(transID)+'.html'
@@ -714,14 +716,19 @@ class fileData():
                 for rec in cls.itemStockList[idx]:
                     tmp+='|:|'+str(rec)
                 fp.write(tmp+'\n')
-########################################################################
-## Code for creating Child window
-########################################################################
-class childFrame():
-    def __init__(self,arg1,arg2,arg3='1100x650'):
-        self.childRoot=tk.Toplevel(arg1)
-        self.childRoot.title(arg2)
-        self.childRoot.geometry(arg3)
+    ########################################################################
+    ## Code for creating Child window
+    ########################################################################
+    @classmethod
+    def createChild(cls,arg1,arg2,arg3=None):
+        print(arg3)
+        root=tk.Toplevel(arg1)
+        root.title(arg2)
+        if arg3 is None:
+            root.geometry(cls.monitorSize)
+        else:
+            root.geometry(arg3)
+        return root
 
 ## Code for creating Buttons
 ########################################################################

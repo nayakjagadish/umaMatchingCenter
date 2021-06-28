@@ -187,7 +187,7 @@ class addTransactions():
                 self.tempItemList[i][18] = pStore.fileData.fConvert(self.tempItemList[i][18]) + pStore.fileData.fConvert(tmp[18])
                 self.tempItemList[i][13] = round(pStore.fileData.fConvert(self.tempItemList[i][14]) * 100 / pStore.fileData.fConvert(self.tempItemList[i][18]),2)
         self.refreshTransItemTree()
-        self.newWin.childRoot.withdraw()
+        self.newWin.withdraw()
 
     def calculateTax(self,vAmount):
         vCost = round(vAmount / 1.05,2)
@@ -260,23 +260,23 @@ class addTransactions():
         self.tItemEntry=[(140,550,8),(320,550,10,1),(500,550,10),(740,550,10),
                          (140,600,10,1),(340,600,10,1),(530,600,12,1),(760,600,10)]
         
-        self.newWin=pStore.childFrame(self.window,'Add purchased Item')
-        self.itemPage = pItem.itemSearchPanel(self.newWin.childRoot,50)
+        self.newWin=pStore.fileData.createChild(self.window,'Add purchased Item')
+        self.itemPage = pItem.itemSearchPanel(self.newWin,50)
         
-        pStore.appLabel(self.newWin.childRoot,self.itmLabels)
-        obj=pStore.appButtons(self.newWin.childRoot,self.addTItemButtons)
+        pStore.appLabel(self.newWin,self.itmLabels)
+        obj=pStore.appButtons(self.newWin,self.addTItemButtons)
         self.itemPage.itemObj.tView.bind('<ButtonRelease-1>',self.transStockTreeSel)
-        self.tItemInfo = pStore.appEntrybox(self.newWin.childRoot,self.tItemEntry)
+        self.tItemInfo = pStore.appEntrybox(self.newWin,self.tItemEntry)
 
         obj.returnList[0]['command']=self.transCalculate
         obj.returnList[1]['command']=self.saveClosetItem
 
-        #pStore.appLabel(self.newWin.childRoot,self.addItemLabels)
-        #self.addItemEntryList=pStore.appEntrybox(self.newWin.childRoot,self.addItemEntry)
+        #pStore.appLabel(self.newWin,self.addItemLabels)
+        #self.addItemEntryList=pStore.appEntrybox(self.newWin,self.addItemEntry)
 
         #self.itemPage.itemsList.listObject.bind('<<ListboxSelect>>',self.actionItemList)
         #self.addRadioButtons()
-        #self.addLineButton=pStore.appButtons(self.newWin.childRoot,[['ADD LINES',[450,270],[1,10]]])
+        #self.addLineButton=pStore.appButtons(self.newWin,[['ADD LINES',[450,270],[1,10]]])
         #self.addLineButton.returnList[0]['command'] = self.createLineItems
 
     def itemViewPopulate(self):
@@ -321,7 +321,7 @@ class addTransactions():
 
     def saveCloseTransItem(self):
         self.saveTransItem()
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def deleteItemTransItem(self):
         if self.is_NewTrans: # If new trans, delete the entry
@@ -331,13 +331,13 @@ class addTransactions():
                 self.modifiedList[self.itemVal].append(self.tempItemList[self.itemVal][11])
             self.tempItemList[self.itemVal][11] = 0 # Make quantity as zero indicating deletion.
         self.refreshTransItemTree()
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def transItemTreeSel(self,evt):
         try:
             curItem = self.transObj.tView.focus()
             self.itemVal=self.transObj.tView.item(curItem)['values'][0]
-            self.itemChildObj=pStore.childFrame(self.window,'view/modify Item','600x550')
+            self.itemChildObj=pStore.fileData.createChild(self.window,'view/modify Item','600x550')
             xPos=40;off=310
             itemLabels=[('Sl # :', xPos,50),
                         ('Brand :',xPos,90),
@@ -366,13 +366,13 @@ class addTransactions():
                    (xPos+off,210,5,1),(xPos,250,12,1),(xPos+off,250,10,1),(xPos,290,12,1),
                    (xPos+off,290,12),(xPos,330,12,1),(xPos+off,330,12,1),(xPos,370,12,1),
                    (xPos+off,370,12,1),(xPos,410,12,1),(xPos+off,410,12,1),(xPos+30,450,12)]
-            pStore.appLabel(self.itemChildObj.childRoot,itemLabels)
-            self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj.childRoot,itemEntry)
+            pStore.appLabel(self.itemChildObj,itemLabels)
+            self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj,itemEntry)
             self.itemViewPopulate()
             if not self.is_NewTrans:
                 self.viewItemEntryList.objList[12]['state'] = tk.DISABLED
                 self.viewItemEntryList.objList[19]['state'] = tk.DISABLED
-            obj=pStore.appButtons(self.itemChildObj.childRoot,[['SAVE',[40,480],[1,10]],
+            obj=pStore.appButtons(self.itemChildObj,[['SAVE',[40,480],[1,10]],
                                                       ['SAVE & CLOSE',[240,480],[1,12]],
                                                       ['DELETE ITEM',[440,480],[1,10]]])
             obj.returnList[0]['command']=self.saveTransItem       #SAVE Button Click
