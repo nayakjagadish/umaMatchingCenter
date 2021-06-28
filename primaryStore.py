@@ -78,7 +78,7 @@ class fileData():
         print('Hahahah')'''
 
     @classmethod
-    def receiptPrint(cls,transID):
+    def receiptWrite(cls,transID):
         dText = { '1' : 'One', '2' : 'Two', '3' : 'Three', '4' : 'Four', '5' : 'Five', '6' : 'Six', '7' : 'Seven', '8' : 'Eight', '9' : 'Nine', '0' : 'Zero'}
         cls.readTransactions()
         vFile = 'receipts\\R_'+str(transID)+'.html'
@@ -125,10 +125,12 @@ class fileData():
             fp.write('*Every Monday Closed on .........Mob:'+'\n')
             fp.write(30 * '- '+'</pre>'+'\n')
         
-        response = messagebox.askquestion("Print Receipt","Do you want to print the receipt ?",icon = 'question')
+    @classmethod
+    def receiptPrint(cls,transID):
+        vFile = 'receipts\\R_'+str(transID)+'.html'
+        response = messagebox.askquestion("Open & Print Receipt","Do you want to Open the Receipt ?",icon = 'question')
         if response == 'yes':
-            #os.startfile('C:\\Python\\'+vFile,'print')
-            os.startfile(vFile,'print')
+            os.startfile('C:\\UmaStoreApp\\'+vFile,'open')
     ########################################################################  Config Methods
     @classmethod
     def returnMonthList(cls):

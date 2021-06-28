@@ -106,6 +106,7 @@ class addTransactions():
         self.transInfo.setValues(transRec)
         self.refreshTransItemTree()
         pStore.fileData.adjustStockTrans(self.transNum,self.modifiedList)
+        pStore.fileData.receiptWrite(self.transNum)
 
     def refreshTransItemTree(self):
         transRec=self.transInfo.getValues()

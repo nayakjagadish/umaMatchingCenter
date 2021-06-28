@@ -150,7 +150,6 @@ class transPortal():
             obj.returnList[3]['command']=self.setFinanceYear      #SET FINANCIAL YEAR
 
         pStore.fileData.readTransactions()
-
         self.monthList=pStore.appListBox(self.appRoot,pStore.fileData.returnMonthList(),[50,150])
         self.dateList=pStore.appListBox(self.appRoot,range(1,31),[350,150])
         self.monthList.listObject.bind('<<ListboxSelect>>',self.selectMonthList)
@@ -167,6 +166,7 @@ class transPortal():
         self.transBtn.returnList[2]['command']=self.resetValues
         self.transBtn.returnList[3]['command']=self.addTransactionRec
         self.transBtn.returnList[4]['command']=self.refreshTree
+        self.appRoot.mainloop()
 
 if __name__ == '__main__':
     transPortal()
