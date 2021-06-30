@@ -23,20 +23,18 @@ class transPortal():
                [ "7",'Customer Price',110],
                [ "8",'Margin',90],
                [ "9",'Tax Payable',90]]
-
         self.trLabel=[('First Name',650,180),('Last Name',650,230),('Phone',650,280),('Month List',50,125),('Date List',350,125)]
         self.trEntry=[(750,180),(750,230),(750,280)]
         self.trButton=[ ['SEARCH',[600,330],[1,10]],
                         ['SEARCH ALL',[700,330],[1,10]],
                         ['CLEAR',[800,330],[1,10]],
-                        ['ADD TRANSACTION',[400,380],[1,15]],
-                        ['REFRESH',[200,380],[1,15]]]
+                        ['ADD TRANSACTION',[1050,400],[4,15]],
+                        ['CLOSE PAGE',[1050,500],[4,15]]]
         self.genericButtons=[
                         ['Supplier & Invoice MANAGEMENT',[50,30],[4,40]],
                         ['ITEM & STOCK MANAGEMENT',[370,30],[4,40]],
                         ['REPORT MANAGEMENT',[690,30],[4,40]],
                         ['SET FINANCIAL YEAR',[1000,30],[2,20]]]
-
         self.monthSelected=None
         self.dateSelected=None
         self.customize()
@@ -105,13 +103,13 @@ class transPortal():
         obj=sTrans.addTransactions(self.appRoot,self.transSelected,False)
 
     def openItemStockPage(self):
-        sWindow = pStore.childFrame(self.appRoot,'Uma Store Brand and Item Frame')
-        obj=sItem.brandItemWindow(sWindow.childRoot)
+        sWindow = pStore.fileData.createChild(self.appRoot,'Uma Store Brand and Item Frame')
+        obj=sItem.brandItemWindow(sWindow)
         pStore.fileData.printLog('Item and Stock management page is opened')
 
     def openSupplierPage(self):
-        sWindow = pStore.childFrame(self.appRoot,'Uma Store Supplier and Invoice Frame')
-        obj=sSupplier.supplierWindow(sWindow.childRoot)
+        sWindow = pStore.fileData.createChild(self.appRoot,'Uma Store Supplier and Invoice Frame')
+        obj=sSupplier.supplierWindow(sWindow)
         pStore.fileData.printLog('Supplier & Invoice page is opened')
 
     def setFinanceYear(self):
@@ -132,11 +130,17 @@ class transPortal():
         self.transObj.destroy()
         self.transBtn.destroy()
 
+    def closePage(self): 
+        self.appRoot.withdraw()
+
     def customize(self):
         if __name__ == '__main__':
             self.appRoot = tk.Tk()
-            self.appRoot.title("Uma Store Billing App")
-            self.appRoot.geometry('1100x650')
+            self.appRoot.title("Uma Store Billing App") 
+            self.appRoot.attributes('-fullscreen', True)
+            pStore.fileData.monitorSize='{}x{}'.format(self.appRoot.winfo_screenwidth(),self.appRoot.winfo_screenheight())
+            self.appRoot.attributes('-fullscreen', False)
+            self.appRoot.geometry(pStore.fileData.monitorSize)
 
             self.FYval=tk.StringVar()
             self.FYselected = pStore.appDropDown(self.appRoot,self.FYval,[t[0] for t in pStore.fileData.FYarray],[1000,80,20,pStore.fileData.getConfigId('FYIDX',0)],True)
@@ -154,7 +158,7 @@ class transPortal():
         self.dateList=pStore.appListBox(self.appRoot,range(1,31),[350,150])
         self.monthList.listObject.bind('<<ListboxSelect>>',self.selectMonthList)
         self.dateList.listObject.bind('<<ListboxSelect>>',self.selectDateList)
-        self.transObj=pStore.appTreeView(self.appRoot,self.treeConfig,[50,450])
+        self.transObj=pStore.appTreeView(self.appRoot,self.treeConfig,[50,400])
         self.refreshTree()
         self.transObj.tView.bind('<Double-1>',self.transactionTreeSel)
         
@@ -165,7 +169,7 @@ class transPortal():
         self.transBtn.returnList[1]['command']=self.searchAll
         self.transBtn.returnList[2]['command']=self.resetValues
         self.transBtn.returnList[3]['command']=self.addTransactionRec
-        self.transBtn.returnList[4]['command']=self.refreshTree
+        self.transBtn.returnList[4]['command']=self.closePage
         self.appRoot.mainloop()
 
 if __name__ == '__main__':

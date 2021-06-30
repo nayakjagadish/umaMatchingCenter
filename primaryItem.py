@@ -11,6 +11,7 @@ class primaryItem():
         pStore.fileData.readItem()
         pStore.fileData.readItemStock()
         self.window=arg1
+        self.listLabel = [('BRAND LIST :',80,30),('ITEM LIST :',330,30)]
         self.customize()
 
     def brandItemListRefresh(self):
@@ -34,8 +35,9 @@ class primaryItem():
             self.brandClick=None
 
     def customize(self):
+        pStore.appLabel(self.window,self.listLabel)
         self.brandList=pStore.appListBox(self.window,[],[50,50])
-        self.itemsList=pStore.appListBox(self.window,[],[350,50])
+        self.itemsList=pStore.appListBox(self.window,[],[300,50],[10,30])
         self.brandListRefresh()
         self.brandList.listObject.bind('<<ListboxSelect>>',self.selectBrandList)
 #####################################################################################
@@ -46,19 +48,19 @@ class itemSearchPanel(primaryItem):
         self.treeConfig = [
                [ "0",'stockId',50],
                [ "1",'Brand',100],
-               [ "2",'Item Name',120],
-               [ "3",'Model No',90],
+               [ "2",'Item Name',150],
+               [ "3",'Model No',150],
                [ "4",'HSN Code',80],
                [ "5",'Size',80],
-               [ "6",'Color',50],
-               [ "7",'MRP',90],
-               [ "8",'Stock Qty',50],
-               [ "9",'Sold Qty',50],
+               [ "6",'Color',60],
+               [ "7",'MRP',70],
+               [ "8",'Stock Qty',60],
+               [ "9",'Sold Qty',60],
                [ "10",'Buy Price',90],
                [ "11",'Piece Disc',90],
                [ "12",'Final Price',90],
                [ "13",'Total GST',90]]
-        self.itemLabel=[('BRAND LIST :',80,30),('ITEM LIST :',380,30),('ITEM SEARCH PANEL',750,50),('ITEM NAME',650,80),('MDOEL NO',650,130),('HSN CODE',650,180)]
+        self.itemLabel=[('ITEM SEARCH PANEL',750,50),('ITEM NAME',650,80),('MDOEL NO',650,130),('HSN CODE',650,180)]
         self.itemEntry=[(750,80),(750,130),(750,180)]
         self.itemButton=[['SEARCH',[600,230],[1,10]],
                          ['SEARCH ALL',[700,230],[1,10]],
@@ -102,7 +104,7 @@ class itemSearchPanel(primaryItem):
         for var in vList:
             if len(var) > 0:
                 if firstSearch:
-                    for k in [f for f in pStore.fileData.itemList.keys() if var in pStore.fileData.itemList[f][cnt]]:
+                    for k in [f for f in pStore.fileData.itemList.keys() if var.upper() in pStore.fileData.itemList[f][cnt]]:
                         tmp += pStore.fileData.itemTreeList(k)
                     firstSearch=False
                 else:

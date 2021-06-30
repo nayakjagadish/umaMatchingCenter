@@ -29,7 +29,8 @@ class fileData():
     fileInvoice=''
     fileInvoiceItem=''
     gstRate=2.5
-    
+    monitorSize=''
+
     @classmethod
     def printLog(cls,dta):
         with open('umaStore.log','a') as filePtr:
@@ -50,87 +51,60 @@ class fileData():
         if var.isdigit():
             return float(var)
 
-    '''@classmethod
-    def receiptPrint(cls,transID):
-        cls.readTransactions()
-        vFile = 'receipts\\R_'+str(transID)+'.txt'
-        trn = cls.transList[str(transID)]
-        with open(vFile,'w') as fp:
-            fp.write('UMA MATCHING CENTER'+'\n')
-            fp.write('CRP Square'+'\n')
-            fp.write('GSTIN:12121212121212'+'\n')
-            fp.write('\n' * 2)
-            fp.write('Transaction number : '+str(transID)+'\n')
-            fp.write('Transaction Date : '+str(trn[0])+'\n')
-            fp.write('\n' * 2)
-            fp.write('   Item      HSN      Qty     MRP    Discount    Final'+'\n')
-            fp.write('-' * 100+'\n')
-            for rec in cls.transItemList[str(transID)]:
-                fp.write(str(rec[0])+str(rec[1])+str(rec[2])+str(rec[3])+str(rec[4])+str(rec[5])+ '  ' + str(rec[11]) + '  ' + str(rec[6]) + ' ' + str(rec[14]) + ' ' + str(rec[16])+'\n')
-            fp.write('-' * 100+'\n')
-            fp.write('Total Quantity'+str(trn[1])+'\n')
-            fp.write('Total MRP'+str(trn[7])+'\n')
-            fp.write('Discount'+str(trn[10])+'\n')
-            fp.write('CGST'+str(trn[11])+'\n')
-            fp.write('SGST'+str(trn[12])+'\n')
-            fp.write('Amount Payable by Customer : '+str(trn[14])+'\n')
-
-        print('Hahahah')'''
-
     @classmethod
     def receiptWrite(cls,transID):
         dText = { '1' : 'One', '2' : 'Two', '3' : 'Three', '4' : 'Four', '5' : 'Five', '6' : 'Six', '7' : 'Seven', '8' : 'Eight', '9' : 'Nine', '0' : 'Zero'}
         cls.readTransactions()
         vFile = 'receipts\\R_'+str(transID)+'.html'
-        trn = cls.transList[str(transID)]
-        with open(vFile,'w') as fp:
-            fp.write('<html>'+'\n'+'<body>'+'\n')
-            fp.write('<h2>'+8*'&nbsp '+'Uma Matching Center</h2>'+'\n')
-            fp.write('<address>'+13*'&nbsp '+'Tathastu market Complex, CRP Square<br />'+18*'&nbsp '+'Bhubaneswar-12<br />'+15*'&nbsp '+'GST: 21ASIPP4739P1Z6</address>'+'\n')
-            fp.write('<h6>'+ 40 * '-&nbsp; '+'<br />Transaction # :'+ 1 * '&nbsp; '+str(transID) + 6 * '&nbsp; ' +'Date: '+ trn[0].split(' ')[0] + 6 * '&nbsp; ' + 'Time: '+ trn[0].split(' ')[1] +'<br />')
-            fp.write(40 * '-&nbsp; ' + '</h6>')
+        if str(transID) in cls.transList.keys():
+            trn = cls.transList[str(transID)]
+            with open(vFile,'w') as fp:
+                fp.write('<html>'+'\n'+'<body>'+'\n')
+                fp.write('<h3 style="margin: 0; padding: 0">'+9*'&nbsp '+'Uma Matching Center</h3>'+'\n')
+                fp.write('<address style="margin: 0; padding: 0">'+7*'&nbsp '+'Tathastu market Complex, CRP Square<br />'+8*'&nbsp '+'Bhubaneswar-12, Mob-'+str(cls.getConfigId('MOBILE',0))+'<br />'+11*'&nbsp '+'GSTN: '+str(cls.getConfigId('GSTN',0))+'</address>'+'\n')
+                fp.write('<h6 style="margin: 0; padding: 0">'+ 40 * '-&nbsp; '+'<br />Transaction # :'+ 1 * '&nbsp; '+str(transID) + 6 * '&nbsp; ' +'Date: '+ trn[0].split(' ')[0] + 6 * '&nbsp; ' + 'Time: '+ trn[0].split(' ')[1] +'<br />')
+                fp.write(40 * '-&nbsp; ' + '</h6>')
 
-            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
-            fp.write('    Item Name'.ljust(20,' ')+'HSN'.ljust(10,' ')+'Qty'.ljust(6,' ')+'MRP'.ljust(6,' ')+'Disc'.ljust(6,' ')+'Final'.ljust(6,' ')+'\n')
-            for rec in cls.transItemList[str(transID)]:
-                vItm = str(rec[0][:4])+' '+str(rec[1][:4])+' '+str(rec[4][:4])+' '+str(rec[5][:4])
-                fp.write(vItm.ljust(20,' ')+str(rec[3]).ljust(10,' ')+str(rec[11]).ljust(6,' ')+str(rec[6]).ljust(6,' ')+str(rec[14]).ljust(6,' ')+str(rec[17]).ljust(6,' ')+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('Total Qty :  <strong>'+str(trn[1])+'</strong>'+'\n')
-            fp.write('Total MRP:              <strong>'+str(trn[7])+'</strong>'+'\n')
-            fp.write('Discount :              <strong>'+str(trn[10])+'</strong>'+'\n')
-            fp.write(30 * '- '+'</pre>'+'\n')
-            fp.write('<h3>Total'+ 30 * '&nbsp'+str(trn[14])+'</h3>'+'\n')
+                fp.write('<pre style="margin: 0; padding: 0">' + '\n' + 27 * '- '+'\n')
+                fp.write('    Item Name'.ljust(20,' ')+'HSN'.ljust(10,' ')+'Qty'.ljust(6,' ')+'MRP'.ljust(6,' ')+'Disc'.ljust(6,' ')+'Final'.ljust(6,' ')+'\n')
+                for rec in cls.transItemList[str(transID)]:
+                    vItm = str(rec[0][:4])+' '+str(rec[1][:4])+' '+str(rec[4][:4])+' '+str(rec[5][:4])
+                    fp.write(vItm.ljust(20,' ')+str(rec[3]).ljust(10,' ')+str(rec[11]).ljust(6,' ')+str(rec[6]).ljust(6,' ')+str(rec[14]).ljust(6,' ')+str(rec[17]).ljust(6,' ')+'\n')
+                fp.write(27 * '- '+'\n')
+                fp.write('Total Qty :  <strong>'+str(trn[1])+'</strong>'+'\n')
+                fp.write('Total MRP:           <strong>'+str(trn[7])+'</strong>'+'\n')
+                fp.write('Discount :           <strong>'+str(cls.fConvert(trn[7])-cls.fConvert(trn[14]))+'</strong>'+'\n')
+                fp.write(27 * '- '+'</pre>'+'\n')
+                fp.write('<h4 style="margin: 0; padding: 0">Total'+ 27 * '&nbsp'+str(trn[14])+'</h4>'+'\n')
             
-            [rup,pas] = str(trn[14]).split('.')
-            vTxt=''
-            for k in rup:
-                vTxt += dText[k]+' '
-            vTxt+= 'Rupees....'
-            fp.write('<h5>'+vTxt+'</h5>'+'\n')
+                [rup,pas] = str(trn[14]).split('.')
+                vTxt=''
+                for k in rup:
+                    vTxt += dText[k]+' '
+                vTxt+= 'Rupees....'
+                fp.write('<h6 style="margin: 0; padding: 0">'+vTxt+'</h6>'+'\n')
 
-            fp.write('<pre>' + '\n' + 30 * '- '+'\n')
-            fp.write('SGST      2.5%      '+str(trn[11])+'\n')
-            fp.write('CGST      2.5%      '+str(trn[12])+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('CASH : '+str(trn[14])+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('Tender Amount : '+str(trn[14])+'\n')
-            fp.write('Return Amount : 0'+'\n')
-            fp.write(30 * '- '+'\n')
-            fp.write('*Subject to the Bhubaneswar Jurisdiction only'+'\n')
-            fp.write('*Exchange within 16 days against bill and Price Tag'+'\n')
-            fp.write('*Exchange time 2.00 PM to 4.00 PM'+'\n')
-            fp.write('*No Guarantee on color &amp; durability'+'\n')
-            fp.write('*Every Monday Closed on .........Mob:'+'\n')
-            fp.write(30 * '- '+'</pre>'+'\n')
-        
+                fp.write('<pre style="margin: 0; padding: 0">' + '\n' + 27 * '- '+'\n')
+                fp.write('SGST      2.5%      '+str(trn[11])+'\n')
+                fp.write('CGST      2.5%      '+str(trn[12])+'\n')
+                fp.write(27 * '- '+'\n')
+                fp.write('CASH : '+str(trn[14])+'\n')
+                fp.write(27 * '- '+'\n')
+                fp.write('Tender Amount : '+str(trn[14])+'\n')
+                fp.write('Return Amount : 0'+'\n')
+                fp.write(27 * '- '+'\n')
+                fp.write('*Subject to the Bhubaneswar Jurisdiction only'+'\n')
+                fp.write('*Exchange within 10 days against bill and Price Tag'+'\n')
+                fp.write('*Exchange time 12.00 Noon to 4.00 PM'+'\n')
+                fp.write('*No Guarantee on color &amp; durability'+'\n')
+                fp.write(27 * '- '+'</pre>'+'\n')
+
     @classmethod
     def receiptPrint(cls,transID):
         vFile = 'receipts\\R_'+str(transID)+'.html'
         response = messagebox.askquestion("Open & Print Receipt","Do you want to Open the Receipt ?",icon = 'question')
         if response == 'yes':
-            os.startfile('C:\\UmaStoreApp\\'+vFile,'open')
+            os.startfile('C:\\UmaStoreCodeApp\\'+vFile,'open')
     ########################################################################  Config Methods
     @classmethod
     def returnMonthList(cls):
@@ -714,14 +688,18 @@ class fileData():
                 for rec in cls.itemStockList[idx]:
                     tmp+='|:|'+str(rec)
                 fp.write(tmp+'\n')
-########################################################################
-## Code for creating Child window
-########################################################################
-class childFrame():
-    def __init__(self,arg1,arg2,arg3='1100x650'):
-        self.childRoot=tk.Toplevel(arg1)
-        self.childRoot.title(arg2)
-        self.childRoot.geometry(arg3)
+    ########################################################################
+    ## Code for creating Child window
+    ########################################################################
+    @classmethod
+    def createChild(cls,arg1,arg2,arg3=None):
+        root=tk.Toplevel(arg1)
+        root.title(arg2)
+        if arg3 is None:
+            root.geometry(cls.monitorSize)
+        else:
+            root.geometry(arg3)
+        return root
 
 ## Code for creating Buttons
 ########################################################################
@@ -763,18 +741,19 @@ class appLabel():
 ## Code for creating ListBoxes
 ########################################################################
 class appListBox():
-    def __init__(self,arg1,arg2,arg3):
+    def __init__(self,arg1,arg2,arg3,arg4=[10,20]):
         self.window=arg1
         self.cord=arg3
+        self.size=arg4
         self.createListbox()
         self.listPopulate(arg2)
 
     def createListbox(self):
         self.listObject=tk.Listbox(self.window,
-                        height = 10,  
-                        width  = 20,  
+                        height = self.size[0],  
+                        width  = self.size[1],
                         activestyle = 'dotbox',  
-                        font = "Calibri")
+                        font = ("Vertica",10))
         self.listObject.place(x=self.cord[0],y=self.cord[1])
 
     def listPopulate(self,vList):

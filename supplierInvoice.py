@@ -62,7 +62,7 @@ class addInvoicePanel():
                             ('Piece Box',880,150),
                             ('Color :' ,600,200),
                             ('Discount % ? :' ,740,200)]
-        self.addItemEntry=[(650,50,10,1),(850,50,10,1),(650,100,10,1),(850,100,10,1)]
+        self.addItemEntry=[(650,50,20,1),(850,50,25,1),(650,100,15,1),(850,100,15,1)]
         self.addItemButtons=[ ['ADD ITEM',[840,350],[4,12]],
                               ['BACK',[960,350],[4,12]],
                               ['SAVE',[840,450],[4,12]],
@@ -97,26 +97,26 @@ class addInvoicePanel():
 
     def addRadioButtons(self):   # Add radio buttons in item page
         self.varSize = tk.StringVar()
-        self.sizeDrop = pStore.appDropDown(self.newWin.childRoot,
+        self.sizeDrop = pStore.appDropDown(self.newWin,
                                            self.varSize,
                                            ['Standard','S to XXL','4-7CM','32-42CM','45-75CM','80-110CM'],
                                            [650,150,10,0],
                                            True)
         self.varQty = tk.StringVar()
-        self.quantDrop = pStore.appDropDown(self.newWin.childRoot,
+        self.quantDrop = pStore.appDropDown(self.newWin,
                                            self.varQty,
                                            self.qtyUnit,
                                            [830,150,3,0],
                                            True)
         self.varColor = tk.StringVar()
-        self.colorDrop = pStore.appDropDown(self.newWin.childRoot,
+        self.colorDrop = pStore.appDropDown(self.newWin,
                                            self.varColor,
                                            ['NO','YES'],
                                            [650,200,3,0],
                                            True)
 
         self.varDisc = tk.StringVar()
-        self.discDrop = pStore.appDropDown(self.newWin.childRoot,
+        self.discDrop = pStore.appDropDown(self.newWin,
                                            self.varDisc,
                                            ['YES','NO',],
                                            [830,200,3,0],
@@ -245,15 +245,15 @@ class addInvoicePanel():
         self.updateInvoicePage()
         self.refreshInvoiceItemTree()
         pStore.fileData.printLog(' '*4 + ' -INV14- Closing Item page')
-        self.newWin.childRoot.withdraw()
+        self.newWin.withdraw()
         
     def createLineItems(self): #Add Item window - everything
         tmp=self.addItemEntryList.getValues()
         pStore.fileData.printLog(' '*4 + ' -INV4A- Item details from screen - ' + str(tmp))
         if len(tmp[1]) == 0:
-            messagebox.showinfo('Uma Store','Please Select an Item from Item List Box !!')
+            messagebox.showinfo('Uma Store','Please Select an Item from Item List Box !!',parent=self.newWin)
         else:
-            self.itemEntryObject=[];offSet=0;yPos=310
+            self.itemEntryObject=[];offSet=0;yPos=320
             labelList = [('Size',30,yPos),
                          ('Quantity' ,100,yPos),
                          ('Color',210,yPos),
@@ -265,11 +265,11 @@ class addInvoicePanel():
                          ('CGST (2.5%)' ,800,yPos),
                          ('SGST (2.5%)' ,900,yPos),
                          ('Grand Total',1000,yPos)]
-            pStore.appLabel(self.newWin.childRoot,labelList)
-            yPos1=yPos+50
+            pStore.appLabel(self.newWin,labelList)
+            yPos1=yPos+40
             itemInfoEntry = [[20,yPos1,8,1],[100,yPos1,6,0,1],[210,yPos1,7,0],[300,yPos1,8,0,1],[400,yPos1,8,0,1],[500,yPos1,8,1,1],
                              [600,yPos1,6,0,1],[700,yPos1,8,0,1],[800,yPos1,8,1,1],[900,yPos1,8,1,1],[1000,yPos1,8,1,1]]
-            buttons=[[ 'SAVE',[1100,400],[4,10]],['SAVE & CLOSE',[1100,500],[4,10]]]
+            buttons=[[ 'SAVE',[1100,400],[4,12]],['SAVE & CLOSE',[1100,500],[4,12]]]
 
             sizeVal     = self.sizeDrop.getValue()
             self.qtyVal = self.quantDrop.getValue()
@@ -288,16 +288,16 @@ class addInvoicePanel():
             else:
                 itemInfoEntry[6][3] = 1
             for rec in self.vSize[sizeVal]:           
-                tmp = pStore.appEntrybox(self.newWin.childRoot,itemInfoEntry)
+                tmp = pStore.appEntrybox(self.newWin,itemInfoEntry)
                 tmp.returnList[0].set(rec)
-                pStore.appLabel(self.newWin.childRoot,[(qtyLabel,140,360+offSet)])
+                pStore.appLabel(self.newWin,[(qtyLabel,140,360+offSet)])
                 self.itemEntryObject.append(tmp)
                 for i in range(len(itemInfoEntry)):
                     itemInfoEntry[i][1] += 40
                 offSet+= 40
                 pStore.fileData.printLog(' '*4 + ' -INV8- Item line added for size -' + rec)
 
-            buttObject=pStore.appButtons(self.newWin.childRoot,buttons)
+            buttObject=pStore.appButtons(self.newWin,buttons)
             buttObject.returnList[0]['command']=self.calculateTotal    # Action #2 SAVE button
             buttObject.returnList[1]['command']=self.saveClose         # Action #3 SAVE & CLOSE button
             self.addLineButton.returnList[0]['state'] = tk.DISABLED
@@ -308,14 +308,14 @@ class addInvoicePanel():
         # 2. Click on Save button (self.updateInvoicePage)
         # 3. Click on Save & Close button (self.saveCloseInvoice)
         pStore.fileData.printLog(' '*4 + ' -INV4- New Item page selected')
-        self.newWin=pStore.childFrame(self.window,'Add Item')
-        self.itemPage = pItem.primaryItem(self.newWin.childRoot)
-        pStore.appLabel(self.newWin.childRoot,self.addItemLabels)
-        self.addItemEntryList=pStore.appEntrybox(self.newWin.childRoot,self.addItemEntry)
+        self.newWin=pStore.fileData.createChild(self.window,'Add Item')
+        self.itemPage = pItem.primaryItem(self.newWin)
+        pStore.appLabel(self.newWin,self.addItemLabels)
+        self.addItemEntryList=pStore.appEntrybox(self.newWin,self.addItemEntry)
 
         self.itemPage.itemsList.listObject.bind('<<ListboxSelect>>',self.actionItemList)
         self.addRadioButtons()
-        self.addLineButton=pStore.appButtons(self.newWin.childRoot,[['ADD LINES',[450,270],[1,10]]])
+        self.addLineButton=pStore.appButtons(self.newWin,[['ADD LINES',[450,240],[4,10]]])
         self.addLineButton.returnList[0]['command'] = self.createLineItems #Action #1
 
     def saveCloseInvoice(self):  #Save & close of invoice page
@@ -323,7 +323,7 @@ class addInvoicePanel():
         self.updateInvoicePage()
         pStore.fileData.printLog(' '*4 + ' -INV20 - Closing invoice page')
         self.invoice_destroy()
-        obj=sSupplier.supplierWindow(self.window)
+        obj=sSupplier.supplierWindow(self.window,self.passedSupplier)
 
     def copyBackPayment(self):
         self.invoiceInfo.returnList[17].set(self.invoiceInfo.getValues()[15])
@@ -408,7 +408,7 @@ class addInvoicePanel():
         self.saveInvoiceItem()
         self.refreshInvoiceItemTree()
         pStore.fileData.printLog(' '*4 + ' -INV27- Closing single item page')
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def deleteItemInvoiceItem(self):
         pStore.fileData.printLog(' '*4 + ' -INV28- Delete item clicked')
@@ -417,14 +417,14 @@ class addInvoicePanel():
         self.updateInvoicePage()
         self.refreshInvoiceItemTree()
         pStore.fileData.printLog(' '*4 + ' -INV29- Closing single item page')
-        self.itemChildObj.childRoot.withdraw()
+        self.itemChildObj.withdraw()
 
     def itemTreeSelection(self,event):
         curItem = self.invoiceItemObj.tView.focus()
         itemSeq=self.invoiceItemObj.tView.item(curItem)['values'][0]
         self.selectedItem = self.getItemIndex(itemSeq,self.finalItemList)
         pStore.fileData.printLog(' '*4 + ' -INV21A- Item in item tree double clicked - item Sl# : '+str(itemSeq))
-        self.itemChildObj=pStore.childFrame(self.window,'view/modify Item','600x550')
+        self.itemChildObj=pStore.fileData.createChild(self.window,'view/modify Item','600x550')
         xPos=40;off=310
         itemLabels=[('Sl # :',xPos,50),
                     ('Brand :',xPos,90),
@@ -448,7 +448,7 @@ class addInvoicePanel():
                     ('Total Tax :',xPos,410),
                     ('Before Disocunt Total:', xPos+off-25,410)]
         self.itemDisc = tk.StringVar()
-        self.itemDiscDrop = pStore.appDropDown(self.itemChildObj.childRoot,
+        self.itemDiscDrop = pStore.appDropDown(self.itemChildObj,
                                            self.itemDisc,
                                            ['YES','NO',],
                                            [xPos+240,290,3,0],
@@ -459,10 +459,10 @@ class addInvoicePanel():
                    (xPos+off,210,5),(xPos,250,12),(xPos+off,250,10),(xPos,290,12),
                    (xPos+off,290,12),(xPos,330,12,1),(xPos+off,330,12,1),(xPos,370,12,1),
                    (xPos+off,370,12,1),(xPos,410,12,1),(xPos+off,410,12,1)]
-        pStore.appLabel(self.itemChildObj.childRoot,itemLabels)
-        self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj.childRoot,itemEntry)
+        pStore.appLabel(self.itemChildObj,itemLabels)
+        self.viewItemEntryList=pStore.appEntrybox(self.itemChildObj,itemEntry)
         self.itemViewPopulate()
-        obj=pStore.appButtons(self.itemChildObj.childRoot,[['SAVE',[40,480],[1,10]],
+        obj=pStore.appButtons(self.itemChildObj,[['SAVE',[40,480],[1,10]],
                                                       ['SAVE & CLOSE',[240,480],[1,12]],
                                                       ['DELETE ITEM',[440,480],[1,10]]])
         obj.returnList[0]['command']=self.saveInvoiceItem       #SAVE Button Click
@@ -471,7 +471,7 @@ class addInvoicePanel():
 
     def Supplier(self):
         self.invoice_destroy()
-        obj=sSupplier.supplierWindow(self.window)
+        obj=sSupplier.supplierWindow(self.window,self.passedSupplier)
 
     def invoice_destroy(self):
         self.invLbl.destroy()
@@ -515,7 +515,7 @@ class addInvoicePanel():
             #pStore.fileData.deductStockInvoice(self.passInvoiceId)
             self.pymtDrop.setValue(tmp[18])
 
-        self.invoiceItemObj = pStore.appTreeView(self.window,self.invoiceTreeConfig,[10,100])
+        self.invoiceItemObj = pStore.appTreeView(self.window,self.invoiceTreeConfig,[50,100])
         self.invoiceItemObj.tView.bind('<Double-1>',self.itemTreeSelection) #Action #1
         self.refreshInvoiceItemTree()
 
