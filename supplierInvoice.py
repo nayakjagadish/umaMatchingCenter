@@ -317,6 +317,7 @@ class addInvoicePanel():
         self.addRadioButtons()
         self.addLineButton=pStore.appButtons(self.newWin,[['ADD LINES',[450,240],[4,10]]])
         self.addLineButton.returnList[0]['command'] = self.createLineItems #Action #1
+        pStore.fileData.adjustStockInvoice(self.passInvoiceId,self.modifiedList)
 
     def saveCloseInvoice(self):  #Save & close of invoice page
         pStore.fileData.printLog(' '*4 + ' -INV19- Invoice Save & Close clicked')
@@ -470,6 +471,7 @@ class addInvoicePanel():
         obj.returnList[2]['command']=self.deleteItemInvoiceItem #DELETE ITEM Button Click
 
     def Supplier(self):
+        pStore.fileData.adjustStockInvoice(self.passInvoiceId,self.modifiedList)
         self.invoice_destroy()
         obj=sSupplier.supplierWindow(self.window,self.passedSupplier)
 

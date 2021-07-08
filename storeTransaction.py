@@ -157,6 +157,7 @@ class addTransactions():
         self.transInfo.setValues(transRec)
         self.populateItemTree()
         pStore.fileData.addNewTransaction(transRec,self.tempItemList)
+        pStore.fileData.adjustStockTrans(self.transNum,self.modifiedList)
 
     def populateItemTree(self):
         tmp = []
@@ -270,7 +271,7 @@ class addTransactions():
 
         obj.returnList[0]['command']=self.transCalculate
         obj.returnList[1]['command']=self.saveClosetItem
-
+        pStore.fileData.adjustStockTrans(self.transNum,self.modifiedList)
         #pStore.appLabel(self.newWin,self.addItemLabels)
         #self.addItemEntryList=pStore.appEntrybox(self.newWin,self.addItemEntry)
 
@@ -382,6 +383,7 @@ class addTransactions():
             pass
 
     def newEntry_destroy(self):
+        pStore.fileData.adjustStockTrans(self.transNum,self.modifiedList)
         self.newLabel.destroy()
         self.transInfo.destroy()
         self.transObj.destroy()
